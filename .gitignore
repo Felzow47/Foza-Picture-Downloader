@@ -10,8 +10,10 @@ __pycache__/
 .Python
 build/
 develop-eggs/
+js_downloads/
 dist/
 downloads/
+creds.json
 eggs/
 .eggs/
 lib/
@@ -140,3 +142,7 @@ Thumbs.db
 
 #other
 cookies.json
+download_js.py
+forza_highres_extractor.user.js
+*.html
+My Forza _ Forza_fichiers/
