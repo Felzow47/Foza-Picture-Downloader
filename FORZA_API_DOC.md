@@ -98,7 +98,7 @@ Si l’API ne retourne pas toutes les photos visibles sur le site, il est probab
 
 Ce comportement a été systématiquement vérifié : toute photo possédant un titre unique apparaît instantanément dans les résultats de l’API après partage dans un jeu forza.
 
----
+
 
 ### 6.1 Explication technique détaillée sur la limitation des titres d’images
 
@@ -111,6 +111,8 @@ Si plusieurs photos possèdent le même titre (par exemple le titre par défaut 
 
 **Justification technique :**
 Cette déduplication semble être une optimisation côté serveur visant à limiter la taille des réponses et à éviter les doublons dans la galerie API. Ce comportement n’est pas documenté officiellement (il n’existe pas de documentation publique sur l’API Forza.net), mais il a été confirmé par analyse et par des tests sur plusieurs comptes et photos non exposées par l’API.
+
+---
 
 ## 7. Qualité des images
 
@@ -128,8 +130,8 @@ L’URL d’image retournée est généralement en `/2` (haute qualité via l’
 
 - L’API retourne uniquement les images de la galerie de l’utilisateur authentifié, mais applique une déduplication stricte sur le champ `title` : si plusieurs images possèdent le même titre, seule la première (généralement la plus ancienne) est exposée par l’API, les autres sont ignorées.
 - Il n’est pas possible d’ajouter, supprimer ou modifier des images via cette API.
-- Le nombre d’images affichées sur le site peut différer de celui retourné par l’API : le site affiche toutes les images, même celles avec des titres en doublon, alors que l’API ne retourne qu’une seule image par titre. Cela explique pourquoi certaines photos récentes ou en doublon n’apparaissent pas dans les scripts utilisant l’API.
-- Aucun filtrage n’est possible par qualité, auteur, date, etc. (uniquement par jeu et pagination).
+- Le nombre d’images affichées sur le site peut différer de celui retourné par l’API : le site affiche toutes les images, même celles avec des titres en doublon, alors que l’API ne retourne qu’une seule image par titre. Cela explique pourquoi certaines photos ancienne ou en doublon n’apparaissent pas dans le script utilisant l’API.
+- Aucun filtrage n’est possible par qualité, auteur, date, etc. (uniquement par jeu).
 - Les URLs d’images sont hébergées sur le CDN AzureEdge. Les variantes `/2`, `/4`, `/6` peuvent être testées.
 
 ---
