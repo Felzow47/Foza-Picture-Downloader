@@ -1,11 +1,12 @@
 import requests
 import json
 import os
+import hashlib
 from urllib.parse import urljoin
 
 # Configuration
 API_BASE_URL = "https://api.forza.net"
-ACCESS_TOKEN = "hbriwyHF7kQhZoZRSVWDsG2rlM3VJAIC4Pg_T4K4Jsk"  # Replace with your actual token
+ACCESS_TOKEN = "YOUR_TOKEN_HERE"  # Replace with your actual token
 GAME = "FH5"  # or "FM", "FH4", "FM7"
 
 # Headers
@@ -14,8 +15,21 @@ headers = {
     "Content-Type": "application/json"
 }
 
+
 # Directory to save images
 os.makedirs("high_res_images", exist_ok=True)
+
+# Log file for downloaded images
+LOG_FILE = "downloaded_images.log"
+
+def get_unique_filename(photo, index):
+    # Use title, photo id, and hash of CDN path for uniqueness
+    title = photo.get('title', f'photo_{index+1}').replace('/', '_').replace('\\', '_')
+    photo_id = photo.get('id') or photo.get('photoId') or ''
+    cdn_path = photo.get('photoCdnPath', '')
+    hash_part = hashlib.md5(cdn_path.encode()).hexdigest()[:8]
+    filename = f"{title}_{photo_id}_{hash_part}.jpg"
+    return filename
 
 def get_photos(game, continuation_token=None):
     url = f"{API_BASE_URL}/api/v4/me/gallery/{game}"
@@ -26,15 +40,40 @@ def get_photos(game, continuation_token=None):
     response.raise_for_status()
     return response.json()
 
+
+def is_already_downloaded(filename):
+    if not os.path.exists(LOG_FILE):
+        print(f"[LOG] No log file found, treating as first run.")
+        return False
+    with open(LOG_FILE, 'r', encoding='utf-8') as f:
+        downloaded = f.read().splitlines()
+        if filename in downloaded:
+            print(f"[SKIP] Already in log: {filename}")
+            return True
+        else:
+            print(f"[CHECK] Not in log: {filename}")
+            return False
+
+def log_download(filename):
+    with open(LOG_FILE, 'a', encoding='utf-8') as f:
+        f.write(filename + '\n')
+    print(f"[LOG] Added to log: {filename}")
+
 def download_image(url, filename):
+    print(f"[START] Checking: {filename}")
+    if is_already_downloaded(filename):
+        print(f"[SKIP] Already downloaded: {filename}")
+        return
     try:
+        print(f"[DOWNLOAD] Downloading from: {url}")
         response = requests.get(url)
         response.raise_for_status()
         with open(os.path.join("high_res_images", filename), 'wb') as f:
             f.write(response.content)
-        print(f"Downloaded: {filename}")
+        log_download(filename)
+        print(f"[SUCCESS] Downloaded: {filename}")
     except Exception as e:
-        print(f"Error downloading {url}: {e}")
+        print(f"[ERROR] Error downloading {url}: {e}")
 
 # Get all photos
 all_photos = []
@@ -55,14 +94,38 @@ while True:
 
 print(f"Found {len(all_photos)} photos")
 
-# Download high-res images
+
+
+print("[INFO] Starting image download process...")
+downloaded_count = 0
+skipped_count = 0
+error_count = 0
+
 for i, photo in enumerate(all_photos):
+    # Try to get the best quality available
     photo_cdn_path = photo.get('photoCdnPath')
+    # If API provides other quality fields, prefer them (e.g. 'originalUrl', 'highResUrl')
+    for key in ['originalUrl', 'highResUrl', 'cdnPath', 'url']:
+        if photo.get(key):
+            photo_cdn_path = photo[key]
+            break
     if photo_cdn_path:
-        title = photo.get('title', f'photo_{i+1}').replace('/', '_').replace('\\', '_')
-        filename = f"{title}.jpg"  # Assume JPG, adjust if needed
-        download_image(photo_cdn_path, filename)
+        filename = get_unique_filename(photo, i)
+        before = os.path.exists(os.path.join("high_res_images", filename))
+        try:
+            download_image(photo_cdn_path, filename)
+            after = os.path.exists(os.path.join("high_res_images", filename))
+            if not before and after:
+                downloaded_count += 1
+            else:
+                skipped_count += 1
+        except Exception:
+            error_count += 1
     else:
-        print(f"No photoCdnPath for photo {i+1}")
+        print(f"[ERROR] No photoCdnPath for photo {i+1}")
+        error_count += 1
+
+print(f"[SUMMARY] Downloaded: {downloaded_count}, Skipped: {skipped_count}, Errors: {error_count}")
+print("[INFO] Download process complete!")
 
 print("Download complete!")

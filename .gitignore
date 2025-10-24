@@ -146,3 +146,4 @@ download_js.py
 forza_highres_extractor.user.js
 *.html
 My Forza _ Forza_fichiers/
+api_gallery_pagination_test.py
