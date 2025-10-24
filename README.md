@@ -31,5 +31,4 @@ Si l’API ne retourne pas toutes les photos visibles sur le site, vérifiez en 
 5. La photo sera alors immédiatement disponible via l’API et téléchargeable par le script.
 
 
-## Licence
-MIT
+
