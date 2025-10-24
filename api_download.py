@@ -6,7 +6,7 @@ from urllib.parse import urljoin
 
 # Configuration
 API_BASE_URL = "https://api.forza.net"
-ACCESS_TOKEN = "YOUR_TOKEN_HERE"  # Replace with your actual token
+ACCESS_TOKEN = "YOUR-ACCESS-TOKEN-HERE"  # Replace with your actual token
 GAME = "FH5"  # or "FM", "FH4", "FM7"
 
 # Headers
@@ -17,7 +17,7 @@ headers = {
 
 
 # Directory to save images
-os.makedirs("high_res_images", exist_ok=True)
+os.makedirs("Downloads", exist_ok=True)
 
 # Log file for downloaded images
 LOG_FILE = "downloaded_images.log"
@@ -68,7 +68,7 @@ def download_image(url, filename):
         print(f"[DOWNLOAD] Downloading from: {url}")
         response = requests.get(url)
         response.raise_for_status()
-        with open(os.path.join("high_res_images", filename), 'wb') as f:
+        with open(os.path.join("Downloads", filename), 'wb') as f:
             f.write(response.content)
         log_download(filename)
         print(f"[SUCCESS] Downloaded: {filename}")
@@ -111,10 +111,10 @@ for i, photo in enumerate(all_photos):
             break
     if photo_cdn_path:
         filename = get_unique_filename(photo, i)
-        before = os.path.exists(os.path.join("high_res_images", filename))
+        before = os.path.exists(os.path.join("Downloads", filename))
         try:
             download_image(photo_cdn_path, filename)
-            after = os.path.exists(os.path.join("high_res_images", filename))
+            after = os.path.exists(os.path.join("Downloads", filename))
             if not before and after:
                 downloaded_count += 1
             else:
