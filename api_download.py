@@ -6,7 +6,14 @@ from urllib.parse import urljoin
 
 # Configuration
 API_BASE_URL = "https://api.forza.net"
-ACCESS_TOKEN = "YOUR-ACCESS-TOKEN-HERE"  # Replace with your actual token
+import json
+import os
+TOKEN_PATH = "forza_token.json"
+if not os.path.exists(TOKEN_PATH):
+    with open(TOKEN_PATH, "w", encoding="utf-8") as f:
+        json.dump({"access_token": ""}, f)
+with open(TOKEN_PATH, "r", encoding="utf-8") as f:
+    ACCESS_TOKEN = json.load(f)["access_token"]
 GAME = "FH5"  # or "FM", "FH4", "FM7"
 
 # Headers
