@@ -2,7 +2,13 @@
 
 **Attention : Cette documentation est issue d’une analyse technique de l’API Forza.net. Elle n’est pas officielle et n’engage pas Microsoft.**
 
----
+## ⚠️ Limitation extrême de l’API et recommandation HAR
+
+> **Attention :** Après analyse approfondie, l’API Forza.net est extrêmement limitée et bizzare pour l’extraction de photos. Même si votre galerie contient des centaines d’images, l’API ne retourne jamais plus de 40 images maximum, à cause d’un comportement serveur non documenté. Il n’existe à ce jour **aucune solution** pour contourner cette limite via l’API seule.
+
+> **Recommandation :** Si vous souhaitez récupérer **toutes** vos photos (au-delà des 40 visibles via l’API), la seule méthode fiable est la capture HAR via le navigateur. Cette méthode permet d’extraire l’intégralité des images affichées sur le site, sans limitation, et doit être privilégiée pour les galeries volumineuses.
+> **Précision :** Utilisez le fichier HAR exporté depuis votre navigateur (par exemple `forza.net_Archive.har`) pour l’extraction complète des images avec le script `har_image_downloader.py`.
+
 
 ## 1. Présentation de l’API
 
